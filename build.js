@@ -22,12 +22,12 @@ function build() {
 
     // Load Config
     let config = { domain: '' };
-    
+
     // Priority 1: Environment Variable
     if (process.env.DOMAIN) {
         config.domain = process.env.DOMAIN;
         console.log('Loaded domain from environment variable.');
-    } 
+    }
     // Priority 2: Config File
     else if (fs.existsSync(CONFIG_FILE)) {
         try {
@@ -59,11 +59,11 @@ function build() {
     // 2. Process Folders
     const types = ['h', 'v'];
     let counts = {};
-    
+
     types.forEach(type => {
         const srcFolder = path.join(SRC_RI, type);
         const distFolder = path.join(DIST_RI, type);
-        
+
         if (!fs.existsSync(srcFolder)) {
             console.warn(`Source folder not found: ${srcFolder}`);
             counts[type] = 0;
@@ -74,7 +74,7 @@ function build() {
 
         // Read and Filter Images
         let files = fs.readdirSync(srcFolder).filter(f => f.match(/\.(webp|jpg|jpeg|png|gif)$/i));
-        
+
         // Shuffle
         files = shuffle(files);
 
@@ -232,21 +232,21 @@ function build() {
     // Copy index.html if exists and not empty
     const indexSrc = path.join(ROOT, 'index.html');
     if (fs.existsSync(indexSrc)) {
-         const stats = fs.statSync(indexSrc);
-         if (stats.size > 0) {
-             fs.copyFileSync(indexSrc, path.join(DIST, 'index.html'));
-             console.log('Copied index.html to dist');
-         } else {
-             console.log('index.html is empty, creating a demo page in dist...');
-             createDemoHtml();
-         }
+        const stats = fs.statSync(indexSrc);
+        if (stats.size > 0) {
+            fs.copyFileSync(indexSrc, path.join(DIST, 'index.html'));
+            console.log('Copied index.html to dist');
+        } else {
+            console.log('index.html is empty, creating a demo page in dist...');
+            createDemoHtml();
+        }
     } else {
         createDemoHtml();
     }
 
     // 4. Generate Gallery Page
     createGalleryHtml(counts, config);
-    
+
     console.log('Build complete. Output is in /dist folder.');
 }
 
@@ -257,13 +257,13 @@ function createGalleryHtml(counts, config) {
     // 1. Prepare Libs in dist/lib
     const libDir = path.join(DIST, 'lib');
     fs.mkdirSync(libDir, { recursive: true });
-    
+
     try {
         // Try to copy from node_modules if they exist
         const masonrySrc = path.join(ROOT, 'node_modules', 'masonry-layout', 'dist', 'masonry.pkgd.min.js');
         const imagesLoadedSrc = path.join(ROOT, 'node_modules', 'imagesloaded', 'imagesloaded.pkgd.min.js');
         const lozadSrc = path.join(ROOT, 'node_modules', 'lozad', 'dist', 'lozad.min.js');
-        
+
         if (fs.existsSync(masonrySrc)) fs.copyFileSync(masonrySrc, path.join(libDir, 'masonry.pkgd.min.js'));
         if (fs.existsSync(imagesLoadedSrc)) fs.copyFileSync(imagesLoadedSrc, path.join(libDir, 'imagesloaded.pkgd.min.js'));
         if (fs.existsSync(lozadSrc)) fs.copyFileSync(lozadSrc, path.join(libDir, 'lozad.min.js'));
@@ -275,7 +275,7 @@ function createGalleryHtml(counts, config) {
 
     // 2. Generate Sections per Type
     let navButtons = `<button class="filter-btn active" onclick="filterGallery('all')">All</button>`;
-    
+
     types.forEach(type => {
         const count = counts[type];
         if (count === 0) return;
@@ -284,9 +284,9 @@ function createGalleryHtml(counts, config) {
 
         let itemsHtml = '';
         for (let i = 1; i <= count; i++) {
-             const url = domain ? `${domain}/ri/${type}/${i}.webp` : `./ri/${type}/${i}.webp`;
-             // Use data-src for lozad, add class 'lozad'
-             itemsHtml += `<div class="grid-item"><img class="lozad" data-src="${url}" alt="${type}-${i}"></div>\n`;
+            const url = domain ? `${domain}/ri/${type}/${i}.webp` : `./ri/${type}/${i}.webp`;
+            // Use data-src for lozad, add class 'lozad'
+            itemsHtml += `<div class="grid-item"><img class="lozad" data-src="${url}" alt="${type}-${i}"></div>\n`;
         }
 
         galleryContent += `
@@ -482,7 +482,7 @@ function createDemoHtml() {
     <h1>Static Random Pic API (Client-Side)</h1>
     <p>
         This is a static implementation. Images are randomized at build time.
-        <a href="https://2x.nz/gallery/" class="btn" style="float: right;">View Gallery</a>
+        <a href="/gallery.html" class="btn" style="float: right;">View Gallery</a>
     </p>
 
     <div class="card">
